@@ -35,8 +35,7 @@ jobs:
           DOCKER_BUILDKIT=1 docker build --platform linux/amd64 \
             --build-arg SSH_PRIVATE_KEY_BUILD="${{ secrets.SSH_PRIVATE_KEY_BUILD }}" \
             --build-arg SPRING_APPLICATION_NAME="${{ secrets.SPRING_APPLICATION_NAME }}" \
-            --build-arg SPRING_DATASOURCE_WRITER_URL="${{ secrets.SPRING_DATASOURCE_WRITER_URL }}" \
-            --build-arg SPRING_DATASOURCE_READER_URL="${{ secrets.SPRING_DATASOURCE_READER_URL }}" \
+            --build-arg SPRING_DATASOURCE_WRITER_URL="${{ secrets.SPRING_DATASOURCE_URL }}" \
             --build-arg SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}" \
             --build-arg SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}" \
             --build-arg SPRING_DATASOURCE_DRIVER_CLASS_NAME="${{ secrets.SPRING_DATASOURCE_DRIVER_CLASS_NAME }}" \
@@ -47,16 +46,14 @@ jobs:
             --build-arg SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE="${{ secrets.SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE }}" \
             --build-arg SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT="${{ secrets.SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT }}" \
             --build-arg SPRING_DATASOURCE_HIKARI_MAX_LIFETIME="${{ secrets.SPRING_DATASOURCE_HIKARI_MAX_LIFETIME }}" \
-            --build-arg SPRING_DATA_REDIS_HOST="${{ secrets.SPRING_DATA_REDIS_HOST }}" \
-            --build-arg SPRING_DATA_REDIS_PORT="${{ secrets.SPRING_DATA_REDIS_PORT }}" \
             --build-arg GIT_TOKEN="${{ secrets.GIT_TOKEN }}" \
-            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-product:$TAG .
+            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-backoffice:$TAG .
 
       # 5. ECR에 도커 이미지 푸시
       - name: Push to Amazon ECR
         run: |
           TAG=${{ github.sha }}
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-product:$TAG
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-backoffice:$TAG
 
       # 6. SSH 설정 (다른 사람의 Private Repo 접근용)
       - name: Setup SSH key for accessing IaC repo
@@ -77,9 +74,8 @@ jobs:
           git clone git@github.com:JinsuYeo/hachwimu-iac.git
           cd hachwimu-iac
           
-          sed -i "s|image: .*hachwimu-product:.*$|image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-product:${TAG}|g" rollout.yaml
+          sed -i "s|image: .*hachwimu-backoffice:.*$|image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-backoffice:${TAG}|g" rollout.yaml
           
           git add rollout.yaml
           git commit -m "Update product image to ${TAG}" || echo "Nothing to commit"
           git push origin main || echo "Push failed"
-        #test22234
