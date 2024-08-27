@@ -49,12 +49,4 @@ public class Product {
 
     @Column(name = "other_discount")
     private boolean otherDiscount;
-
-    public void purchase() {
-        if (this.stock > 0) {
-            this.stock--;
-        } else {
-            throw new RuntimeException("Product is out of stock!");
-        }
-    }
 }
