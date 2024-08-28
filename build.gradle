@@ -57,7 +57,7 @@ dependencies {
 	//git
 	implementation 'org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r'
 
-	implementation platform("org.springframework.cloud:spring-cloud-dependencies:4.1.0")
+	implementation platform("org.springframework.cloud:spring-cloud-dependencies:2023.0.3")
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
