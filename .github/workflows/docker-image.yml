@@ -28,6 +28,13 @@ jobs:
         with:
           registry-type: private
 
+      # 4. AWS ECR 로그인 - 버지니아 리전
+      - name: Log in to Amazon ECR (Virginia)
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registry-type: private
+          region: us-east-1
+
       # 4. 도커 이미지 빌드
       - name: Build Docker image
         run: |
@@ -48,12 +55,21 @@ jobs:
             --build-arg SPRING_DATASOURCE_HIKARI_MAX_LIFETIME="${{ secrets.SPRING_DATASOURCE_HIKARI_MAX_LIFETIME }}" \
             --build-arg GIT_TOKEN="${{ secrets.GIT_TOKEN }}" \
             -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-backoffice:$TAG .
+            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/hachwimu-backoffice:$TAG .
 
       # 5. ECR에 도커 이미지 푸시
       - name: Push to Amazon ECR
         run: |
           TAG=${{ github.sha }}
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-backoffice:$TAG
+
+      # 7. ECR에 도커 이미지 푸시 - 버지니아 리전
+      - name: Push to Amazon ECR (Virginia)
+        run: |
+          TAG=${{ github.sha }}
+          REGION=us-east-1
+          REPOSITORY_NAME=hachwimu-backoffice
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY_NAME:$TAG
 
       # 6. SSH 설정 (다른 사람의 Private Repo 접근용)
       - name: Setup SSH key for accessing IaC repo
