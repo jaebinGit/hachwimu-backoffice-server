@@ -47,6 +47,8 @@ jobs:
             --build-arg SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT="${{ secrets.SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT }}" \
             --build-arg SPRING_DATASOURCE_HIKARI_MAX_LIFETIME="${{ secrets.SPRING_DATASOURCE_HIKARI_MAX_LIFETIME }}" \
             --build-arg GIT_TOKEN="${{ secrets.GIT_TOKEN }}" \
+            --build-arg SPRING_DATA_REDIS_HOST="${{ secrets.SPRING_DATA_REDIS_HOST }}" \
+            --build-arg SPRING_DATA_REDIS_PORT="${{ secrets.SPRING_DATA_REDIS_PORT }}" \
             -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-backoffice:$TAG .
 
       # 5. ECR에 도커 이미지 푸시

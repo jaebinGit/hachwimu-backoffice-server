@@ -1,8 +1,8 @@
 package com.example.oliveyoung.service;
 
-import com.example.oliveyoung.client.ProductClient;
 import com.example.oliveyoung.model.Product;
 import com.example.oliveyoung.repository.ProductRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,24 +11,20 @@ import java.util.List;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-    private final ProductClient productClient;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
-    public ProductService(ProductRepository productRepository, ProductClient productClient) {
+    public ProductService(ProductRepository productRepository, RedisTemplate<String, Object> redisTemplate) {
         this.productRepository = productRepository;
-        this.productClient = productClient;
+        this.redisTemplate = redisTemplate;
     }
-
-//    public ProductService(ProductRepository productRepository) {
-//        this.productRepository = productRepository;
-//    }
 
     // 상품 등록 처리 (쓰기 작업)
     @Transactional
     public Product createProduct(Product product) {
             // 데이터베이스에 상품 정보 저장 (쓰기 작업)
             Product savedProduct = productRepository.save(product);
-            productClient.clearAllProductsCache(); // 전체 목록 캐시 무효화
+            redisTemplate.delete("products:all");
 
             return savedProduct;
     }
@@ -51,7 +47,7 @@ public class ProductService {
 
             // 상품 삭제 처리
             productRepository.delete(product);
-            productClient.clearAllProductsCache(); // 전체 목록 캐시 무효화
+            redisTemplate.delete("products:all");
     }
 
 
@@ -79,7 +75,7 @@ public class ProductService {
 
             // 데이터베이스에 업데이트된 상품 정보 저장
             productRepository.save(product);
-            productClient.clearAllProductsCache(); // 전체 목록 캐시 무효화
+            redisTemplate.delete("products:all");
 
             return product;
     }
