@@ -32,6 +32,7 @@ public class DynamicSchedulerService {
         scheduledTasks.put(taskId, scheduledFuture);
     }
 
+//    #test
     public void cancelTask(String taskId) {
         ScheduledFuture<?> scheduledTask = scheduledTasks.remove(taskId);
         if (scheduledTask != null) {
