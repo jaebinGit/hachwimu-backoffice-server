@@ -4,10 +4,7 @@ import com.example.oliveyoung.service.GitService;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -25,32 +22,52 @@ public class GitController {
     @PostMapping("/pod/scale")
     public CompletableFuture<ResponseEntity<String>> podScaleService(@RequestParam int replicas) throws GitAPIException, IOException {
         return gitService.updatePodMinReplicas(replicas)
-                .thenApply(ResponseEntity::ok) // 비동기 작업 성공 시 응답 처리
+                .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Error: " + ex.getMessage())); // 비동기 작업 실패 시 예외 처리
+                        .body("Error: " + ex.getMessage()));
     }
 
     @PostMapping("/node/scale")
     public CompletableFuture<ResponseEntity<String>> nodScaleService(@RequestParam int replicas) throws GitAPIException, IOException {
         return gitService.updateNodeMinReplicas(replicas)
-                .thenApply(ResponseEntity::ok) // 비동기 작업 성공 시 응답 처리
+                .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Error: " + ex.getMessage())); // 비동기 작업 실패 시 예외 처리
+                        .body("Error: " + ex.getMessage()));
     }
 
     @PostMapping("/schedule/pod")
-    public CompletableFuture<ResponseEntity<String>> schedulePodScaling(@RequestParam int replicas,
-                                                                        @RequestParam long delayInMillis) {
-        return gitService.schedulePodScaling(replicas, delayInMillis)
+    public CompletableFuture<ResponseEntity<String>> schedulePodScaling(@RequestBody ScheduleRequest request) {
+        return gitService.schedulePodScaling(request.getReplicas(), request.getDelayInMillis())
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> ResponseEntity.status(500).body("Error: " + ex.getMessage()));
     }
 
     @PostMapping("/schedule/node")
-    public CompletableFuture<ResponseEntity<String>> scheduleNodeScaling(@RequestParam int replicas,
-                                                                         @RequestParam long delayInMillis) {
-        return gitService.scheduleNodeScaling(replicas, delayInMillis)
+    public CompletableFuture<ResponseEntity<String>> scheduleNodeScaling(@RequestBody ScheduleRequest request) {
+        return gitService.scheduleNodeScaling(request.getReplicas(), request.getDelayInMillis())
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> ResponseEntity.status(500).body("Error: " + ex.getMessage()));
+    }
+}
+
+// 새로운 DTO 클래스 추가
+class ScheduleRequest {
+    private int replicas;
+    private long delayInMillis;
+
+    public int getReplicas() {
+        return replicas;
+    }
+
+    public void setReplicas(int replicas) {
+        this.replicas = replicas;
+    }
+
+    public long getDelayInMillis() {
+        return delayInMillis;
+    }
+
+    public void setDelayInMillis(long delayInMillis) {
+        this.delayInMillis = delayInMillis;
     }
 }
