@@ -37,4 +37,20 @@ public class GitController {
                 .exceptionally(ex -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("Error: " + ex.getMessage())); // 비동기 작업 실패 시 예외 처리
     }
+
+    @PostMapping("/schedule/pod")
+    public CompletableFuture<ResponseEntity<String>> schedulePodScaling(@RequestParam int replicas,
+                                                                        @RequestParam long delayInMillis) {
+        return gitService.schedulePodScaling(replicas, delayInMillis)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.status(500).body("Error: " + ex.getMessage()));
+    }
+
+    @PostMapping("/schedule/node")
+    public CompletableFuture<ResponseEntity<String>> scheduleNodeScaling(@RequestParam int replicas,
+                                                                         @RequestParam long delayInMillis) {
+        return gitService.scheduleNodeScaling(replicas, delayInMillis)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.status(500).body("Error: " + ex.getMessage()));
+    }
 }

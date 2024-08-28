@@ -21,10 +21,42 @@ public class GitService {
     private static final String BRANCH_NAME = "main";  // 브랜치 이름
 
     private final CredentialsProvider credentialsProvider;
+    private final DynamicSchedulerService dynamicSchedulerService;
 
-    public GitService(CredentialsProvider credentialsProvider) {
+    public GitService(CredentialsProvider credentialsProvider, DynamicSchedulerService dynamicSchedulerService) {
         this.credentialsProvider = credentialsProvider;
+        this.dynamicSchedulerService = dynamicSchedulerService;
     }
+
+    @Async
+    public CompletableFuture<String> scheduleNodeScaling(int replicas, long delayInMillis) {
+        dynamicSchedulerService.scheduleTask("nodeScaling", () -> {
+            try {
+                // Node 스케일링 로직 호출
+                updateNodeMinReplicas(replicas);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }, delayInMillis);
+
+        return CompletableFuture.completedFuture("Node 스케일링이 예약되었습니다.");
+    }
+
+
+    @Async
+    public CompletableFuture<String> schedulePodScaling(int replicas, long delayInMillis) {
+        dynamicSchedulerService.scheduleTask("podScaling", () -> {
+            try {
+                // Pod 스케일링 로직 호출
+                updatePodMinReplicas(replicas);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }, delayInMillis);
+
+        return CompletableFuture.completedFuture("Pod 스케일링이 예약되었습니다.");
+    }
+
 
     @Async // 비동기적으로 작업을 처리
     public CompletableFuture<String> updatePodMinReplicas(int replicas) throws GitAPIException, IOException {
