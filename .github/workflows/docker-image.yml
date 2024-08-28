@@ -67,7 +67,7 @@ jobs:
           git config --global user.name "jaebinGit"
           git config --global user.email "tnwoql327@gmail.com"
 
-      # 8. IaC Private Repo에 이미지 태그 업데이트 (Argo CD 자동 배포)
+      # 8. IaC Private Repo에 이미지 태그 업데이트 (Argo CD 자동 배포) 1
       - name: Clone IaC Repo and Update Tag
         run: |
           TAG=${{ github.sha }}
