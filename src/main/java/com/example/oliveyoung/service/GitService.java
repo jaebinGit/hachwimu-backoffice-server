@@ -71,7 +71,10 @@ public class GitService {
 
         // 4. Git Add, Commit, Push
         git.add().addFilepattern("hpa.yaml").call();
-        git.commit().setMessage("Updated minReplicas for service-products to " + replicas).call();
+        git.commit().setMessage("Updated minReplicas for service-products to " + replicas)
+                .setAuthor("jaebinGit", "tnwoql327@gmail.com")  // 작성자 설정
+                .setCommitter("jaebinGit", "tnwoql327@gmail.com") // 커미터 설정
+                .call();
         git.push().setCredentialsProvider(credentialsProvider).call();
 
         return CompletableFuture.completedFuture("Successfully updated minReplicas for service-products to " + replicas + " and pushed to repository.");
@@ -90,7 +93,10 @@ public class GitService {
 
         // 4. Git Add, Commit, Push
         git.add().addFilepattern("overprovision.yaml").call();
-        git.commit().setMessage("Updated replicas for nginx to " + replicas).call();
+        git.commit().setMessage("Updated replicas for node to " + replicas)
+                .setAuthor("jaebinGit", "tnwoql327@gmail.com")  // 작성자 설정
+                .setCommitter("jaebinGit", "tnwoql327@gmail.com") // 커미터 설정
+                .call();
         git.push().setCredentialsProvider(credentialsProvider).call();
 
         return CompletableFuture.completedFuture("Successfully updated replicas for nginx to " + replicas + " and pushed to repository.");
