@@ -56,6 +56,9 @@ dependencies {
 
 	//git
 	implementation 'org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r'
+
+	implementation platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.5")
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
 tasks.named('test') {

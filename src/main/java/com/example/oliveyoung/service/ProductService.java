@@ -1,5 +1,6 @@
 package com.example.oliveyoung.service;
 
+import com.example.oliveyoung.client.ProductClient;
 import com.example.oliveyoung.model.Product;
 import com.example.oliveyoung.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -10,9 +11,12 @@ import java.util.List;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ProductClient productClient;
 
-    public ProductService(ProductRepository productRepository) {
+
+    public ProductService(ProductRepository productRepository, ProductClient productClient) {
         this.productRepository = productRepository;
+        this.productClient = productClient;
     }
 
     // 상품 등록 처리 (쓰기 작업)
@@ -20,6 +24,7 @@ public class ProductService {
     public Product createProduct(Product product) {
             // 데이터베이스에 상품 정보 저장 (쓰기 작업)
             Product savedProduct = productRepository.save(product);
+            productClient.clearAllProductsCache(); // 전체 목록 캐시 무효화
 
             return savedProduct;
     }
@@ -42,6 +47,7 @@ public class ProductService {
 
             // 상품 삭제 처리
             productRepository.delete(product);
+            productClient.clearAllProductsCache(); // 전체 목록 캐시 무효화
     }
 
 
@@ -69,6 +75,7 @@ public class ProductService {
 
             // 데이터베이스에 업데이트된 상품 정보 저장
             productRepository.save(product);
+            productClient.clearAllProductsCache(); // 전체 목록 캐시 무효화
 
             return product;
     }
