@@ -20,13 +20,8 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+          aws-region: us-east-1
 
-      # 3. AWS ECR 로그인
-      - name: Log in to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registry-type: private
 
       # 4. AWS ECR 로그인 - 버지니아 리전
       - name: Log in to Amazon ECR (Virginia)
@@ -54,14 +49,13 @@ jobs:
             --build-arg SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT="${{ secrets.SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT }}" \
             --build-arg SPRING_DATASOURCE_HIKARI_MAX_LIFETIME="${{ secrets.SPRING_DATASOURCE_HIKARI_MAX_LIFETIME }}" \
             --build-arg GIT_TOKEN="${{ secrets.GIT_TOKEN }}" \
-            -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-backoffice:$TAG .
             -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/hachwimu-backoffice:$TAG .
 
       # 5. ECR에 도커 이미지 푸시
       - name: Push to Amazon ECR
         run: |
           TAG=${{ github.sha }}
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/hachwimu-backoffice:$TAG
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/hachwimu-backoffice:$TAG
 
       # 7. ECR에 도커 이미지 푸시 - 버지니아 리전
       - name: Push to Amazon ECR (Virginia)
