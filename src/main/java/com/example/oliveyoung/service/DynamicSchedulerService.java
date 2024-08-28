@@ -23,10 +23,19 @@ public class DynamicSchedulerService {
     }
 
     public void scheduleTask(String taskId, Runnable task, long delayInMillis) {
+        // 기존에 같은 taskId로 예약된 작업이 있는지 확인하고 제거
+        cancelTask(taskId);
+
         ScheduledFuture<?> scheduledFuture = taskScheduler.schedule(task, triggerContext -> {
-            // 현재 시간에서 지정된 지연을 추가하여 다음 실행 시간 계산
             return new Date(System.currentTimeMillis() + delayInMillis).toInstant();
         });
         scheduledTasks.put(taskId, scheduledFuture);
+    }
+
+    public void cancelTask(String taskId) {
+        ScheduledFuture<?> scheduledTask = scheduledTasks.remove(taskId);
+        if (scheduledTask != null) {
+            scheduledTask.cancel(false);
+        }
     }
 }
