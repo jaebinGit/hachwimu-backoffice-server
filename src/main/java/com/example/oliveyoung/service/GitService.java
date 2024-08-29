@@ -72,8 +72,8 @@ public class GitService {
         // 4. Git Add, Commit, Push
         git.add().addFilepattern("hpa.yaml").call();
         git.commit().setMessage("Updated minReplicas for service-products to " + replicas)
-                .setAuthor("jaebinGit", "tnwoql327@gmail.com")  // 작성자 설정
-                .setCommitter("jaebinGit", "tnwoql327@gmail.com") // 커미터 설정
+                .setAuthor("jaebinGit", "tnwoql327@gmail.com")
+                .setCommitter("jaebinGit", "tnwoql327@gmail.com")
                 .call();
         git.push().setCredentialsProvider(credentialsProvider).call();
 
